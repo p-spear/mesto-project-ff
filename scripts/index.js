@@ -1,5 +1,5 @@
 const cardsTemplate = document.querySelector('#card-template').content;
-const cardsList = document.querySelector('.places__list');
+const cardsContainer = document.querySelector('.places__list');
 
 function deleteCard(cardElement) {
   cardElement.remove();
@@ -7,7 +7,7 @@ function deleteCard(cardElement) {
 
 initialCards.forEach(function (item) {
   const card = createCard(item, deleteCard);
-  cardsList.append(card);
+  cardsContainer.append(card);
 });
 
 function createCard(dataCard, deleteCard) {
@@ -16,6 +16,7 @@ function createCard(dataCard, deleteCard) {
   
   cardElement.querySelector('.card__title').textContent = dataCard.name;
   cardElement.querySelector('.card__image').src = dataCard.link;
+  cardElement.querySelector('.card__image').alt = dataCard.name;
   deleteButton.addEventListener('click', function() {
     deleteCard(cardElement);
   }); 
