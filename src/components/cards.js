@@ -1,5 +1,3 @@
-import { openModal } from './modal';
-
 export const initialCards = [
     {
       name: "Архыз",
@@ -27,17 +25,29 @@ export const initialCards = [
     }
 ];
 
-export function createCard(dataCard, deleteCard, openCard, like) {
-  const cardsTemplate = document.querySelector('#card-template').content;
+const cardsTemplate = document.querySelector('#card-template').content;
+
+export function createCard(dataCard, deleteCard, like, openImagePopup) {
   const cardElement = cardsTemplate.querySelector('.places__item').cloneNode(true);
   const deleteButton = cardElement.querySelector('.card__delete-button');
+  const buttonLikeCard = cardElement.querySelector('.card__like-button');
+  const imageCard = cardElement.querySelector('.card__image');
   
   cardElement.querySelector('.card__title').textContent = dataCard.name;
-  cardElement.querySelector('.card__image').src = dataCard.link;
-  cardElement.querySelector('.card__image').alt = dataCard.name;
+  imageCard.src = dataCard.link;
+  imageCard.alt = dataCard.name;
+
   deleteButton.addEventListener('click', function() {
     deleteCard(cardElement);
   }); 
+
+  buttonLikeCard.addEventListener('click', function(evt) {
+    like(evt.target);
+  });
+
+  imageCard.addEventListener('click', function(evt) {
+      openImagePopup(evt.target);
+  });
 
   return cardElement;
 }
@@ -46,20 +56,6 @@ export function deleteCard(cardElement) {
   cardElement.remove();
 }
 
-export function openCard (card, popupContent) {
-  const imagePopup = popupContent.querySelector('.popup__image');
-  const imageCaption = popupContent.querySelector('.popup__caption');
-  
-  imagePopup.src = card.src;
-  imagePopup.alt = card.alt; 
-  imageCaption.textContent = card.alt; 
-  openModal(popupContent);
-}
-
-export function like (card) {
-  if (card.classList.contains('card__like-button_is-active')) {
-    card.classList.remove('card__like-button_is-active');
-  } else {
-    card.classList.add('card__like-button_is-active');
-  }
+export function like(icon) {
+  icon.classList.toggle('card__like-button_is-active'); 
 }
