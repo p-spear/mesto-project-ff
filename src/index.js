@@ -1,5 +1,6 @@
 import './pages/index.css';
-import { initialCards, createCard, deleteCard, like } from './components/cards';
+import { initialCards} from './components/cards';
+import { createCard, deleteCard, like } from './components/card';
 import { openModal, closeModal, addListenerToPopup } from './components/modal';
 
 const cardsContainer = document.querySelector('.places__list');
