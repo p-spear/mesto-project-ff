@@ -25,10 +25,8 @@ export const initialCards = [
     }
 ];
 
-const cardsTemplate = document.querySelector('#card-template').content;
-
-export function createCard(dataCard, deleteCard, like, openImagePopup) {
-  const cardElement = cardsTemplate.querySelector('.places__item').cloneNode(true);
+export function createCard(dataCard, template, deleteCard, like, openImagePopup) {
+  const cardElement = template.querySelector('.places__item').cloneNode(true);
   const deleteButton = cardElement.querySelector('.card__delete-button');
   const buttonLikeCard = cardElement.querySelector('.card__like-button');
   const imageCard = cardElement.querySelector('.card__image');

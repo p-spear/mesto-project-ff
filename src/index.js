@@ -3,6 +3,7 @@ import { initialCards, createCard, deleteCard, like } from './components/cards';
 import { openModal, closeModal, addListenerToPopup } from './components/modal';
 
 const cardsContainer = document.querySelector('.places__list');
+const cardsTemplate = document.querySelector('#card-template').content;
 const buttonOpenPopupProfile = document.querySelector('.profile__edit-button');
 const buttonOpenPopupAddNewCard = document.querySelector('.profile__add-button');
 const popupEditProfile = document.querySelector('.popup_type_edit');
@@ -39,7 +40,7 @@ function handleAddFormSubmit(evt) {
       name: inputPlaceNameNewCard.value,
       link: inputLinkImageNewCard.value
     };
-    const newCard = createCard(newCardObject, deleteCard, like, openImagePopup);
+    const newCard = createCard(newCardObject, cardsTemplate, deleteCard, like, openImagePopup);
     cardsContainer.prepend(newCard);
     closeModal(popupNewCard);
     evt.target.reset();
@@ -60,7 +61,7 @@ formProfile.addEventListener('submit', handleEditFormSubmit);
 formAddNewCard.addEventListener('submit', handleAddFormSubmit); 
 
 initialCards.forEach(function (item) {
-  const card = createCard(item, deleteCard, like, openImagePopup);
+  const card = createCard(item, cardsTemplate, deleteCard, like, openImagePopup);
   cardsContainer.append(card);
 });
 
