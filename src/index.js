@@ -2,6 +2,7 @@ import './pages/index.css';
 import { initialCards} from './components/cards';
 import { createCard, deleteCard, like } from './components/card';
 import { openModal, closeModal, addListenerToPopup } from './components/modal';
+import { enableValidation, clearValidation } from './components/validation';
 
 const cardsContainer = document.querySelector('.places__list');
 const cardsTemplate = document.querySelector('#card-template').content;
@@ -9,6 +10,7 @@ const buttonOpenPopupProfile = document.querySelector('.profile__edit-button');
 const buttonOpenPopupAddNewCard = document.querySelector('.profile__add-button');
 const popupEditProfile = document.querySelector('.popup_type_edit');
 const popupNewCard = document.querySelector('.popup_type_new-card');
+const buttonSubmitPopupNewCard = popupNewCard.querySelector('.popup__button');
 const popupFullImage = document.querySelector('.popup_type_image');
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
@@ -17,9 +19,19 @@ const captionPopupFullImage = popupFullImage.querySelector('.popup__caption');
 const formProfile = document.forms['edit-profile'];
 const formAddNewCard = document.forms['new-place'];
 const inputProfileTitle = document.querySelector('.popup__input_type_name');
+const inputProfileTitleError = formProfile.querySelector(`.${inputProfileTitle.id}-error`);
 const inputProfileDescription = document.querySelector('.popup__input_type_description');
+const inputProfileDescriptionError = formProfile.querySelector(`.${inputProfileDescription.id}-error`);
 const inputPlaceNameNewCard = document.querySelector('.popup__input_type_card-name');
 const inputLinkImageNewCard = document.querySelector('.popup__input_type_url');
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_inactive',
+  inputErrorClass: 'popup__input-error',
+  errorClass: 'popup__input-error_active'
+}
 
 function openImagePopup (card) {
   imagePopupFullImage.src = card.src;
@@ -45,11 +57,13 @@ function handleAddFormSubmit(evt) {
     cardsContainer.prepend(newCard);
     closeModal(popupNewCard);
     evt.target.reset();
+    clearValidation(formAddNewCard, validationConfig);
 }
 
 buttonOpenPopupProfile.addEventListener('click', function() {
   formProfile.elements.name.value = profileTitle.textContent;
   formProfile.elements.description.value = profileDescription.textContent;
+  clearValidation(formProfile, validationConfig);
   openModal(popupEditProfile);
 });
 
@@ -69,3 +83,5 @@ initialCards.forEach(function (item) {
 addListenerToPopup(popupEditProfile);
 addListenerToPopup(popupNewCard);
 addListenerToPopup(popupFullImage);
+
+enableValidation(validationConfig);
