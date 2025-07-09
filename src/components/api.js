@@ -6,17 +6,20 @@ const config = {
   }
 };
 
+const handleResponse = (response) => {
+  if (response.ok) {
+    return response.json();
+  } else {
+    return Promise.reject(`Ошибка: ${response.status}`);
+  }
+}
+
 export const getProfileData = () => {
   return fetch(`${config.baseUrl}/users/me`, {
     method: 'GET',
     headers: config.headers
   })
-  .then((res) => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  })
+  .then(handleResponse)
 };
 
 export const getInitialCards = () => {
@@ -24,23 +27,45 @@ export const getInitialCards = () => {
     method: 'GET',
     headers: config.headers
   })
-  .then((res) => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  })
+  .then(handleResponse)
 };
 
-export const postProfileData = (tittle, description) => {
-  fetch(`${config.baseUrl}/users/me`, {
+export const postProfileData = (name, about) => {
+  return fetch(`${config.baseUrl}/users/me`, {
     method: 'PATCH',
     headers: config.headers,
     body: JSON.stringify({
-      name: tittle,
-      about: description
+      name: name,
+      about: about
     })
   })
+  .then(handleResponse)
 };
 
-//export const postNewCardData = 
+export const postNewCardData = (name, link) => {
+  return fetch(`${config.baseUrl}/cards`, {
+    method: 'POST',
+    headers: config.headers,
+    body: JSON.stringify({
+      name: name,
+      link: link
+    })
+  })
+  .then(handleResponse)
+};
+
+export const deleteCardFromServer = (cardId) => {
+  return fetch(`${config.baseUrl}/cards/${cardId}`, {
+    method: 'DELETE',
+    headers: config.headers
+  })
+  .then(handleResponse)
+};
+
+export const changeLike = (cardId, method) => {
+  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
+    method: method,
+    headers: config.headers
+  })
+  .then(handleResponse)
+};

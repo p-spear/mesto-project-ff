@@ -1,9 +1,8 @@
 import './pages/index.css';
-import { initialCards} from './components/cards';
 import { createCard, deleteCard, like } from './components/card';
 import { openModal, closeModal, addListenerToPopup } from './components/modal';
 import { enableValidation, clearValidation } from './components/validation';
-import { getProfileData, getInitialCards, postProfileData } from './components/api';
+import { getProfileData, getInitialCards, postProfileData, postNewCardData } from './components/api';
 
 const cardsContainer = document.querySelector('.places__list');
 const cardsTemplate = document.querySelector('#card-template').content;
@@ -44,24 +43,50 @@ function openImagePopup (card) {
 
 function handleEditFormSubmit(evt) {
     evt.preventDefault();
-    profileTitle.textContent = inputProfileTitle.value;
-    profileDescription.textContent = inputProfileDescription.value;
+    postProfileData(inputProfileTitle.value, inputProfileDescription.value)
+    .then((data) => {
+      profileTitle.textContent = data.name;
+      profileDescription.textContent = data.about;
+    })
+    .catch((err) => {
+      console.log(`Ошибка: ${err}`);
+    })
+    .finally(() => {
     closeModal(popupEditProfile);
-    postProfileData(inputProfileTitle.value, inputProfileDescription.value);
+    });
 }
 
 function handleAddFormSubmit(evt) {
-    evt.preventDefault();
-    const newCardObject = {
-      name: inputPlaceNameNewCard.value,
-      link: inputLinkImageNewCard.value
-    };
+  evt.preventDefault();
+
+  postNewCardData(inputPlaceNameNewCard.value, inputLinkImageNewCard.value)
+  .then((newCardObject) => {
     const newCard = createCard(newCardObject, cardsTemplate, deleteCard, like, openImagePopup);
     cardsContainer.prepend(newCard);
+  })
+  .catch((err) => {
+    console.log(`Ошибка: ${err}`);
+  })
+  .finally(() => {
     closeModal(popupNewCard);
     evt.target.reset();
     clearValidation(formAddNewCard, validationConfig);
+  });
 }
+
+Promise.all([getProfileData(), getInitialCards()])
+.then(([profileData, cardsData]) => {
+  profileTitle.textContent = profileData.name;
+  profileDescription.textContent = profileData.about;
+  profileImage.style.backgroundImage = `url('${profileData.avatar}')`;
+  cardsData.forEach(function (item) {
+    const card = createCard(item, cardsTemplate, deleteCard, like, openImagePopup, profileData._id);
+    cardsContainer.append(card);
+  });
+})
+.catch((err) => {
+  console.log(`Ошибка: ${err}`);
+});
 
 buttonOpenPopupProfile.addEventListener('click', function() {
   formProfile.elements.name.value = profileTitle.textContent;
@@ -77,21 +102,6 @@ buttonOpenPopupAddNewCard.addEventListener('click', function() {
 formProfile.addEventListener('submit', handleEditFormSubmit); 
 
 formAddNewCard.addEventListener('submit', handleAddFormSubmit); 
-
-Promise.all([getProfileData(), getInitialCards()])
-  .then(([profileData, cardsData]) => {
-    profileTitle.textContent = profileData.name;
-    profileDescription.textContent = profileData.about;
-    profileImage.style.backgroundImage = `url('${profileData.avatar}')`;
-    console.log(cardsData);
-    cardsData.forEach(function (item) {
-      const card = createCard(item, cardsTemplate, deleteCard, like, openImagePopup);
-      cardsContainer.append(card);
-    });
-  })
-  .catch((err) => {
-    console.log(`Ошибка: ${err}`);
-  });
 
 addListenerToPopup(popupEditProfile);
 
