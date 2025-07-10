@@ -1,3 +1,11 @@
+.profile__image_container {
+  width: 120px;
+  height: 120px;
+  margin: 0 29px 0 0;
+  display: block;
+	position: relative;
+}
+
 .profile__image {
   width: 120px;
   height: 120px;
@@ -6,17 +14,54 @@
   border-radius: 50%;
   background-size: cover;
   background-position: center;
-  margin: 0 29px 0 0;
+}
+
+.profile__image_container::before {
+  content: '';
+  position: absolute;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('../../../images/pencil.svg') no-repeat center center;
+  opacity: 0;
+  z-index: 1;
+  transition: opacity 0.3s ease;
+  pointer-events: auto;
+}
+
+.profile__image_container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, .8);
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s linear;
+}
+
+.profile__image_container:hover::before,
+.profile__image_container:hover::after {
+  opacity: 1;
+  cursor: pointer;
 }
 
 @media screen and (max-width: 740px) {
-  .profile__image {
+  .profile__image_container {
     margin: 0 10px 0 0;
   }
 }
 
 @media screen and (max-width: 480px) {
-  .profile__image {
+  .profile__image_container {
     margin-right: 0;
   }
 }

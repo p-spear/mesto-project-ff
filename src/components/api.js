@@ -69,3 +69,14 @@ export const changeLike = (cardId, method) => {
   })
   .then(handleResponse)
 };
+
+export const postAvatar = (link) => {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
+    method: 'PATCH',
+    headers: config.headers,
+    body: JSON.stringify({
+      avatar: link
+    })
+  })
+  .then(handleResponse)
+};
