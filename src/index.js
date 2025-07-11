@@ -48,13 +48,13 @@ const handleEditAvatartFormSubmit = (evt) => {
   postAvatar(inputAvatarLink.value)
   .then((data) => {
     profileImage.style.backgroundImage = `url('${data.avatar}')`;
+    closeModal(popupEditAvatar);
   })
   .catch((err) => {
     console.log(err);
   })
   .finally(() => {
-  renderLoading(evt.target.elements.button, false);
-  closeModal(popupEditAvatar);
+    renderLoading(evt.target.elements.button, false);
   });
 } 
 
@@ -65,13 +65,13 @@ const handleEditFormSubmit = (evt) => {
   .then((data) => {
     profileTitle.textContent = data.name;
     profileDescription.textContent = data.about;
+    closeModal(popupEditProfile);
   })
   .catch((err) => {
     console.log(err);
   })
   .finally(() => {
-  renderLoading(evt.target.elements.button, false);
-  closeModal(popupEditProfile);
+    renderLoading(evt.target.elements.button, false);
   });
 }
 
@@ -82,14 +82,14 @@ const handleAddFormSubmit = (evt) => {
   .then((newCardObject) => {
     const newCard = createCard(newCardObject, cardsTemplate, deleteCard, like, openImagePopup, newCardObject.owner._id);
     cardsContainer.prepend(newCard);
+    closeModal(popupNewCard);
+    evt.target.reset();
   })
   .catch((err) => {
     console.log(err);
   })
   .finally(() => {
     renderLoading(evt.target.elements.button, false);
-    closeModal(popupNewCard);
-    evt.target.reset();
     clearValidation(formAddNewCard, validationConfig);
   });
 }

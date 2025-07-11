@@ -1,9 +1,6 @@
 export const enableValidation = (validationConfig) => {
   const formList = Array.from(document.querySelectorAll(validationConfig.formSelector));
   formList.forEach((formElement) => {
-    formElement.addEventListener('submit', (evt) => {
-      evt.preventDefault();
-    });
     setEventListeners(formElement, validationConfig);
   });
 }
@@ -21,7 +18,6 @@ const setEventListeners = (formElement, validationConfig) => {
 }
 
 const checkInputValidity = (formElement, inputElement, validationConfig) => {
-  inputElement.setCustomValidity('');
   if (!inputElement.validity.valid) {
     if (inputElement.validity.patternMismatch) {
       inputElement.setCustomValidity(inputElement.dataset.patternErrorMessage);
@@ -46,6 +42,7 @@ const hideInputError = (formElement, inputElement, validationConfig) => {
   inputElement.classList.remove(validationConfig.inputErrorClass);
   errorElement.classList.remove(validationConfig.errorClass);
   errorElement.textContent = '';
+  inputElement.setCustomValidity('');
 }
 
 export const clearValidation = (formElement, validationConfig) => {
@@ -54,8 +51,7 @@ export const clearValidation = (formElement, validationConfig) => {
   inputList.forEach((inputElement) => {
       hideInputError(formElement, inputElement, validationConfig);
   });
-  buttonElement.disabled = true;
-  buttonElement.classList.add(validationConfig.inactiveButtonClass);
+  disableButton(buttonElement, validationConfig);
 }
 
 const hasInvalidInput = (inputList) => {
@@ -66,10 +62,18 @@ const hasInvalidInput = (inputList) => {
 
 const toggleButtonState = (inputList, buttonElement, validationConfig) => {
   if(hasInvalidInput(inputList)) {
-    buttonElement.disabled = true;
-    buttonElement.classList.add(validationConfig.inactiveButtonClass);
+    disableButton(buttonElement, validationConfig);
   } else {
-    buttonElement.disabled = false;
-    buttonElement.classList.remove(validationConfig.inactiveButtonClass);
+    enableButton(buttonElement, validationConfig);
   }
+}
+
+const disableButton = (buttonElement, validationConfig) => {
+  buttonElement.disabled = true;
+  buttonElement.classList.add(validationConfig.inactiveButtonClass);
+}
+
+const enableButton = (buttonElement, validationConfig) => {
+  buttonElement.disabled = false;
+  buttonElement.classList.remove(validationConfig.inactiveButtonClass);
 }
