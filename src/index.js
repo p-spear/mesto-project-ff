@@ -1,8 +1,8 @@
 import './pages/index.css';
-import { createCard, deleteCard, like } from './components/card';
+import { createCard, like } from './components/card';
 import { openModal, closeModal, addListenerToPopup } from './components/modal';
 import { enableValidation, clearValidation } from './components/validation';
-import { getProfileData, getInitialCards, postProfileData, postNewCardData, postAvatar, checkAvatar } from './components/api';
+import { getProfileData, getInitialCards, postProfileData, postNewCardData, postAvatar, deleteCardFromServer, checkAvatar } from './components/api';
 
 const cardsContainer = document.querySelector('.places__list');
 const cardsTemplate = document.querySelector('#card-template').content;
@@ -10,6 +10,7 @@ const buttonOpenPopupEditAvatar = document.querySelector('.profile__image_contai
 const buttonOpenPopupProfile = document.querySelector('.profile__edit-button');
 const buttonOpenPopupAddNewCard = document.querySelector('.profile__add-button');
 const popupEditAvatar = document.querySelector('.popup_type_update-avatar');
+const popupSureDelete = document.querySelector('.popup_type_sure');
 const popupEditProfile = document.querySelector('.popup_type_edit');
 const popupNewCard = document.querySelector('.popup_type_new-card');
 const popupFullImage = document.querySelector('.popup_type_image');
@@ -19,6 +20,7 @@ const profileDescription = document.querySelector('.profile__description');
 const imagePopupFullImage = popupFullImage.querySelector('.popup__image');
 const captionPopupFullImage = popupFullImage.querySelector('.popup__caption');
 const formEditAvatar = document.forms['update-avatar'];
+const formSureDelete = document.forms['sure-popup'];
 const formProfile = document.forms['edit-profile'];
 const formAddNewCard = document.forms['new-place'];
 const inputAvatarLink = document.querySelector('.popup__input_type_avatar');
@@ -34,12 +36,21 @@ const validationConfig = {
   inputErrorClass: 'popup__input-error',
   errorClass: 'popup__input-error_active'
 }
+let cardForDelete = {};
 
 const openImagePopup = (card) => {
   imagePopupFullImage.src = card.src;
   imagePopupFullImage.alt = card.alt; 
   captionPopupFullImage.textContent = card.alt; 
   openModal(popupFullImage);
+}
+
+const onDeleteCard = (cardId, cardElement) => {
+  cardForDelete = {
+    cardId: cardId,
+    cardElement: cardElement
+  }
+  openModal(popupSureDelete);
 }
 
 const handleEditAvatartFormSubmit = (evt) => {
@@ -57,6 +68,20 @@ const handleEditAvatartFormSubmit = (evt) => {
     renderLoading(evt.target.elements.button, false);
   });
 } 
+
+const handleSureDeleteFormSubmit = (evt) => {
+	evt.preventDefault();
+  if (!cardForDelete.cardElement) return;
+	deleteCardFromServer(cardForDelete.cardId)
+  .then(() => {
+    cardForDelete.cardElement.remove();
+    closeModal(popupSureDelete);
+    cardForDelete = {};
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+}
 
 const handleEditFormSubmit = (evt) => {
   evt.preventDefault();
@@ -80,7 +105,7 @@ const handleAddFormSubmit = (evt) => {
   renderLoading(evt.target.elements.button, true);
   postNewCardData(inputPlaceNameNewCard.value, inputLinkImageNewCard.value)
   .then((newCardObject) => {
-    const newCard = createCard(newCardObject, cardsTemplate, deleteCard, like, openImagePopup, newCardObject.owner._id);
+    const newCard = createCard(newCardObject, cardsTemplate, like, openImagePopup, onDeleteCard, newCardObject.owner._id);
     cardsContainer.prepend(newCard);
     closeModal(popupNewCard);
     evt.target.reset();
@@ -108,7 +133,7 @@ Promise.all([getProfileData(), getInitialCards()])
   profileDescription.textContent = profileData.about;
   profileImage.style.backgroundImage = `url('${profileData.avatar}')`;
   cardsData.forEach((item) => {
-    const card = createCard(item, cardsTemplate, deleteCard, like, openImagePopup, profileData._id);
+    const card = createCard(item, cardsTemplate, like, openImagePopup, onDeleteCard, profileData._id);
     cardsContainer.append(card);
   });
 })
@@ -135,11 +160,15 @@ buttonOpenPopupAddNewCard.addEventListener('click', function() {
 
 formEditAvatar.addEventListener('submit', handleEditAvatartFormSubmit); 
 
+formSureDelete.addEventListener('submit', handleSureDeleteFormSubmit); 
+
 formProfile.addEventListener('submit', handleEditFormSubmit); 
 
 formAddNewCard.addEventListener('submit', handleAddFormSubmit); 
 
 addListenerToPopup(popupEditAvatar);
+
+addListenerToPopup(popupSureDelete);
 
 addListenerToPopup(popupEditProfile);
 

@@ -1,6 +1,6 @@
-import { deleteCardFromServer, changeLike } from './api';
+import { changeLike } from './api';
 
-export const createCard = (dataCard, template, deleteCard, like, openImagePopup, ownerId) => {
+export const createCard = (dataCard, template, like, openImagePopup, onDeleteCard, ownerId) => {
   const cardElement = template.querySelector('.places__item').cloneNode(true);
   const deleteButton = cardElement.querySelector('.card__delete-button');
   const buttonLikeCard = cardElement.querySelector('.card__like-button');
@@ -14,7 +14,8 @@ export const createCard = (dataCard, template, deleteCard, like, openImagePopup,
 
   if(ownerId === dataCard.owner._id) {
     deleteButton.addEventListener('click', function() {
-      deleteCard(cardElement, dataCard._id);
+      onDeleteCard(dataCard._id, cardElement);
+      //deleteCard(cardElement, dataCard._id);
     });
   } else {
     deleteButton.style.display = 'none';
@@ -33,7 +34,7 @@ export const createCard = (dataCard, template, deleteCard, like, openImagePopup,
   return cardElement;
 }
 
-export const deleteCard = (cardElement, cardId) => {
+/* export const deleteCard = (cardElement, cardId) => {
   deleteCardFromServer(cardId)
   .then((result) => {
     cardElement.remove();
@@ -41,7 +42,7 @@ export const deleteCard = (cardElement, cardId) => {
   .catch((err) => {
     console.log(err);
   });
-}
+} */
 
 export const like = (icon, likesCounter, cardId, ownerId) => {
   changeLike(cardId, icon.classList.contains('card__like-button_is-active') ? 'DELETE' : 'PUT')
